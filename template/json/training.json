@@ -1,0 +1,35 @@
+{
+  "type": "carousel",
+  "contents": [
+		{% for item in items %}
+    {
+			"type": "bubble",
+			"header": {
+				"type": "box",
+				"layout": "vertical",
+				"contents": [
+					{
+						"type": "text",
+						"text": "{{item['name']}}"
+					}
+				]
+			},
+		  "body": {
+		    "type": "box",
+		    "layout": "horizontal",
+		    "contents": [
+						{
+				      "type": "button",
+				      "action": {
+								"type":"postback",
+						   "label":"Select this",
+						   "data":"data attribute",
+						   "text":"{{item['name']}}"
+				      }
+						}
+		    ]
+		  }
+		}{{ "," if not loop.last }}
+		{% endfor %}
+  ]
+}

@@ -17,6 +17,8 @@ CHANNEL_SECRET = os.getenv('CHANNEL_SECRET')
 
 line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(CHANNEL_SECRET)
+from line_botr import repository
+repository.create_table()
 
 ACTION_LIST = ['追加', '記録' , '削除']
 action_mode = None
@@ -32,37 +34,41 @@ def callback():
     global action_mode
     global tr_name
     global tr_strength
-    log_global_variables()
-    app.logger.info(request.get_json())
+    # log_global_variables()
+    json = request.get_json()
+    app.logger.info(json)
+    user_resource = json['events'][0]
+    user_id = user_resource['source']['userId']
+
 
     json = request.get_json()
     reply_token =  json['events'][0]['replyToken']
     if action_mode is None:
         input_msg = json['events'][0]['message']['text']
-        output_msg = select_action_mode(input_msg)
+        output_msg = select_action_mode(reply_token, input_msg)
         if output_msg is None:
             throw_msg(reply_token, 'その操作はできません')
             return ""
 
         data = cc.get_carousel_json()
         throw_carousel(reply_token, data)
-        return "OK"
+        return ""
 
     if tr_name is None:
         if 'message' not in json['events'][0].keys():
-            return "OK"
+            return ""
         input_msg = json['events'][0]['message']['text']
-        output_msg = select_tr_name(input_msg)
+        output_msg = select_tr_name(reply_token, input_msg)
         throw_msg(reply_token, output_msg)
-        return "OK"
+        return ""
 
     if tr_strength is None:
         input_msg = json['events'][0]['message']['text']
-        output_msg = select_tr_strength(input_msg)
+        output_msg = select_tr_strength(reply_token, input_msg)
         throw_msg(reply_token, output_msg)
-        return "OK"
+        return ""
 
-    return 'OK'
+    return ''
 
 def throw_msg(reply_token, msg):
     try:
@@ -107,7 +113,7 @@ def create_carousel(category):
         items = [VideoItem(k, v) for k,v in item_dict.items()]
     return items
 
-def select_action_mode(msg):
+def select_action_mode(user_id, msg):
     global action_mode
     if msg not in ACTION_LIST:
         return None
@@ -115,14 +121,14 @@ def select_action_mode(msg):
     print(msg + 'ですね')
     return str(msg) + ' ですね'
 
-def select_tr_name(msg):
+def select_tr_name(user_id, msg):
     global action_mode
     global tr_name
     tr_name = msg
     format_request_msg = '[回数] [セット数] [重さ(kg)]　の形式で入力してください'
     return format_request_msg
 
-def select_tr_strength(msg):
+def select_tr_strength(user_id, msg):
     global action_mode
     global tr_name
     global tr_strength
@@ -131,6 +137,8 @@ def select_tr_strength(msg):
         return "入力の形式が正しくありません"
 
     tr_strength = beautify(msg)
+    repository.insert_record(user_id, tr_name, msg)
+
     # record
     reply_msg = "{0} {1} -登録完了".format(tr_name, tr_strength)
     initialize_valiables()
