@@ -20,7 +20,7 @@ handler = WebhookHandler(CHANNEL_SECRET)
 from line_botr import repository
 repository.create_table()
 
-ACTION_LIST = ['追加', '記録' , '削除']
+ACTION_LIST = ['追加', '記録' , '削除', '参照']
 action_mode = None
 tr_name  = None
 tr_strength = None
@@ -42,28 +42,34 @@ def callback():
 
 
     json = request.get_json()
-    reply_token =  json['events'][0]['replyToken']
+    reply_token =  user_resource['replyToken']
     if action_mode is None:
-        input_msg = json['events'][0]['message']['text']
+        input_msg = user_resource['message']['text']
         output_msg = select_action_mode(reply_token, input_msg)
         if output_msg is None:
             throw_msg(reply_token, 'その操作はできません')
             return ""
-
-        data = cc.get_carousel_json()
-        throw_carousel(reply_token, data)
-        return ""
+        elif output_msg == '追加':
+            data = cc.get_carousel_json()
+            throw_carousel(reply_token, data)
+            return ""
+        elif output_msg == '参照':
+            data = repository.get_records(user_id)
+            output_msg = beautify_records(data)
+            throw_msg(reply_token, output_msg)
+            action_mode = None
+            return ""
 
     if tr_name is None:
-        if 'message' not in json['events'][0].keys():
+        if 'message' not in user_resource.keys():
             return ""
-        input_msg = json['events'][0]['message']['text']
+        input_msg = user_resource['message']['text']
         output_msg = select_tr_name(reply_token, input_msg)
         throw_msg(reply_token, output_msg)
         return ""
 
     if tr_strength is None:
-        input_msg = json['events'][0]['message']['text']
+        input_msg = user_resource['message']['text']
         output_msg = select_tr_strength(reply_token, input_msg)
         throw_msg(reply_token, output_msg)
         return ""
@@ -119,7 +125,7 @@ def select_action_mode(user_id, msg):
         return None
     action_mode = msg
     print(msg + 'ですね')
-    return str(msg) + ' ですね'
+    return msg
 
 def select_tr_name(user_id, msg):
     global action_mode
@@ -179,3 +185,7 @@ def beautify(msg):
     if len(ary) == 3:
         str = '{}rep {}set {}Kg'.format(ary[0], ary[1], ary[2])
     return str
+
+def beautify_records(msg):
+    li = [' '.join(x) for x in msg]
+    return ' '.join(li)

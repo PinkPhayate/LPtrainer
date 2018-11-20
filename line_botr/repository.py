@@ -6,7 +6,7 @@ DB_PATH = 'sqlite.db'
 def create_table():
     record_query = """
     CREATE TABLE IF NOT EXISTS training_record(
-        id INTEGER AUTO INCREMENT PRIMARY KEY,
+        id INTEGER PRIMARY KEY,
         user_id INTEGER NOT NULL ,
         tr_date TEXT NOT NULL,
         tr_name TEXT NOT NULL ,
@@ -39,10 +39,20 @@ def insert_record(uid, tr_name, tr_strength):
     query = """
         INSERT INTO training_record (
             user_id, tr_date, tr_name, tr_weight, tr_rep, tr_set)
-                VALUES ('{}', {}, '{}', {}, {}, {});
+                VALUES ('{}', '{}', '{}', {}, {}, {});
 
     """.format(uid, datetime_string, tr_name, tr_weight, tr_rep, tr_set)
     print(query)
     with closing(sqlite3.connect(DB_PATH)) as con:
         con.execute(query)
         con.commit()
+
+def get_records(uid):
+    query = """
+        SELECT tr_date, tr_name, tr_weight, tr_rep, tr_set FROM training_record
+        ORDER BY tr_date DESC;
+    """
+    print(query)
+    with closing(sqlite3.connect(DB_PATH)) as con:
+        ret = con.execute(query).fetchall()
+        return ret
