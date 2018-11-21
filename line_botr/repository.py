@@ -18,7 +18,7 @@ def create_table():
 
     kind_query = """
     CREATE TABLE IF NOT EXISTS training_kind(
-        id INTEGER AUTO INCREMENT PRIMARY KEY,
+        id INTEGER PRIMARY KEY,
         user_id INTEGER NOT NULL ,
         tr_name TEXT NOT NULL
     );
@@ -56,3 +56,23 @@ def get_records(uid):
     with closing(sqlite3.connect(DB_PATH)) as con:
         ret = con.execute(query).fetchall()
         return ret
+
+def get_training_menu(uid):
+    query = """
+        SELECT tr_name FROM training_kind
+        WHERE user_id = '{}'
+    """.format(uid)
+    print(query)
+    with closing(sqlite3.connect(DB_PATH)) as con:
+        ret = con.execute(query).fetchall()
+        return ret
+
+def insert_tr_menu(uid, tr_name):
+    query = """
+        INSERT INTO training_kind (user_id, tr_name)
+                VALUES ('{}', '{}');
+    """.format(uid, tr_name)
+    print(query)
+    with closing(sqlite3.connect(DB_PATH)) as con:
+        con.execute(query)
+        con.commit()

@@ -49,7 +49,7 @@ def callback():
         if output_msg is None:
             throw_msg(reply_token, 'その操作はできません')
             return ""
-        elif output_msg == '追加':
+        elif output_msg == '登録':
             data = cc.get_carousel_json()
             throw_carousel(reply_token, data)
             return ""
@@ -59,18 +59,29 @@ def callback():
             throw_msg(reply_token, output_msg)
             action_mode = None
             return ""
+        elif output_msg == '追加':
+            output_msg = '追加する種目名を入力してください'
+            throw_msg(reply_token, output_msg)
+            return ""
+
 
     if tr_name is None:
         if 'message' not in user_resource.keys():
             return ""
-        input_msg = user_resource['message']['text']
-        output_msg = select_tr_name(reply_token, input_msg)
+        if action_mode == '登録':
+            input_msg = user_resource['message']['text']
+            output_msg = select_tr_name(reply_token, input_msg)
+        elif action_mode == '追加':
+            repository.insert_tr_menu(user_id, tr_name)
+            output_msg = '追加しました'
+            initialize_valiables()
         throw_msg(reply_token, output_msg)
         return ""
 
     if tr_strength is None:
         input_msg = user_resource['message']['text']
         output_msg = select_tr_strength(reply_token, input_msg)
+        output_msg = select_tr_strength(user_id, input_msg)
         throw_msg(reply_token, output_msg)
         return ""
 
