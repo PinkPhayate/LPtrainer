@@ -1,0 +1,120 @@
+{
+  "type": "carousel",
+  "contents": [
+		{% for item in items %}
+		{
+		  "type": "bubble",
+		  "body": {
+		    "type": "box",
+		    "layout": "vertical",
+		    "contents": [
+		      {
+		        "type": "text",
+		        "text": "{{item['tr_name']}}",
+		        "weight": "bold",
+		        "size": "xl"
+		      },
+		      {
+		        "type": "box",
+		        "layout": "vertical",
+		        "margin": "lg",
+		        "spacing": "sm",
+		        "contents": [
+								{% if item['tr_weight'] %}
+							{
+		            "type": "box",
+		            "layout": "baseline",
+		            "spacing": "sm",
+		            "contents": [
+		              {
+		                "type": "text",
+		                "text": "WEIGHT",
+		                "color": "#aaaaaa",
+		                "size": "sm",
+		                "flex": 1
+		              },
+		              {
+		                "type": "text",
+		                "text": "{{item['tr_weight']}}",
+		                "wrap": true,
+		                "color": "#666666",
+		                "size": "sm",
+		                "flex": 5
+		              }
+		            ]
+		          },
+							{% endif %}
+							{
+		            "type": "box",
+		            "layout": "baseline",
+		            "spacing": "sm",
+		            "contents": [
+		              {
+		                "type": "text",
+		                "text": "REP",
+		                "color": "#aaaaaa",
+		                "size": "sm",
+		                "flex": 1
+		              },
+		              {
+		                "type": "text",
+		                "text": "{{item['tr_rep']}}",
+		                "wrap": true,
+		                "color": "#666666",
+		                "size": "sm",
+		                "flex": 5
+		              }
+		            ]
+		          },
+							{
+		            "type": "box",
+		            "layout": "baseline",
+		            "spacing": "sm",
+		            "contents": [
+		              {
+		                "type": "text",
+		                "text": "SET",
+		                "color": "#aaaaaa",
+		                "size": "sm",
+		                "flex": 1
+		              },
+		              {
+		                "type": "text",
+		                "text": "{{item['tr_set']}}",
+		                "wrap": true,
+		                "color": "#666666",
+		                "size": "sm",
+		                "flex": 5
+		              }
+		            ]
+		          }
+		        ]
+		      }
+		    ]
+		  },
+		  "footer": {
+		    "type": "box",
+		    "layout": "vertical",
+		    "spacing": "sm",
+		    "contents": [
+		      {
+		        "type": "button",
+		        "height": "sm",
+		        "action": {
+								"type":"postback",
+							 "label":"delete it",
+							 "data":"{{item['id']}}"
+		        }
+		      },
+		      {
+		        "type": "spacer",
+		        "size": "sm"
+		      }
+		    ],
+		    "flex": 0
+		  }
+		}
+		{{ "," if not loop.last }}
+		{% endfor %}
+	]
+}

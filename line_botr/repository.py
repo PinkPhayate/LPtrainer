@@ -1,7 +1,7 @@
 import sqlite3
 from contextlib import closing
 from datetime import datetime as dt
-
+from line_botr.training import Record
 DB_PATH = 'sqlite.db'
 def create_table():
     record_query = """
@@ -48,14 +48,16 @@ def insert_record(uid, tr_name, tr_strength):
         con.commit()
 
 def get_records(uid):
+    datetime_string = dt.now().strftime("%Y-%m-%d")
+    # SELECT tr_date, tr_name, tr_weight, tr_rep, tr_set FROM training_record
     query = """
-        SELECT tr_date, tr_name, tr_weight, tr_rep, tr_set FROM training_record
-        ORDER BY tr_date DESC;
-    """
+        SELECT * FROM training_record
+        WHERE tr_date = '{}' ORDER BY tr_date DESC;
+    """.format(datetime_string)
     print(query)
     with closing(sqlite3.connect(DB_PATH)) as con:
         ret = con.execute(query).fetchall()
-        ret = [" ".join(map(str, d)) for d in ret]
+        ret = [Record(d) for d in ret]
         return ret
 
 def get_training_menu(uid):
@@ -74,6 +76,16 @@ def insert_tr_menu(uid, tr_name):
         INSERT INTO training_kind (user_id, tr_name)
                 VALUES ('{}', '{}');
     """.format(uid, tr_name)
+    print(query)
+    with closing(sqlite3.connect(DB_PATH)) as con:
+        con.execute(query)
+        con.commit()
+
+def drop_record(input_attr):
+    query = """
+        DELETE FROM training_record
+                WHERE id = {};
+    """.format(input_attr)
     print(query)
     with closing(sqlite3.connect(DB_PATH)) as con:
         con.execute(query)

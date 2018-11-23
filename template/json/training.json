@@ -24,7 +24,6 @@
 								"type":"postback",
 						   "label":"Select this",
 						   "data":"data attribute",
-						   "text":"{{item['name']}}"
 				      }
 						}
 		    ]

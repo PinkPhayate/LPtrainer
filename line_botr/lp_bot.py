@@ -53,13 +53,13 @@ def callback():
         elif output_msg == '記録':
             lst = repository.get_training_menu(user_id)
             trainig_menu = [Training(t) for t in lst]
-            trainig_menu = cc.to_cc_json(trainig_menu)
+            trainig_menu = cc.items2tr_car(trainig_menu)
             throw_carousel(reply_token, trainig_menu)
             return ""
         elif output_msg == '参照':
             lst = repository.get_records(user_id)
-            trainig_menu = [Training(t[0][0]) for t in lst]
-            trainig_menu = cc.to_cc_json(trainig_menu)
+            # trainig_menu = [Training(t) for t in lst]
+            trainig_menu = cc.items2record_car(lst)
             throw_carousel(reply_token, trainig_menu)
             initialize_valiables()
             return ""
@@ -70,10 +70,15 @@ def callback():
 
 
     if tr_name is None:
+        if action_mode == '削除':
+            input_attr = user_resource['postback']['data']
+            repository.drop_record(input_attr)
+            output_msg = '削除しました'
         if 'message' not in user_resource.keys():
             return ""
         input_msg = user_resource['message']['text']
-        if action_mode == '記録':            input_msg = user_resource['message']['text']
+        if action_mode == '記録':
+            input_msg = user_resource['message']['text']
             output_msg = select_tr_name(reply_token, input_msg)
         elif action_mode == '追加':
             repository.insert_tr_menu(user_id, input_msg)
