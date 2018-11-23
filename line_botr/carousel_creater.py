@@ -15,3 +15,8 @@ def get_carousel_json():
     template = template_env.get_template('training.json')
     data = template.render(dict(items=items))
     return data
+
+def to_cc_json(items):
+    template = template_env.get_template('training.json')
+    data = template.render(dict(items=items))
+    return data

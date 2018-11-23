@@ -55,6 +55,7 @@ def get_records(uid):
     print(query)
     with closing(sqlite3.connect(DB_PATH)) as con:
         ret = con.execute(query).fetchall()
+        ret = [" ".join(map(str, d)) for d in ret]
         return ret
 
 def get_training_menu(uid):
@@ -64,8 +65,9 @@ def get_training_menu(uid):
     """.format(uid)
     print(query)
     with closing(sqlite3.connect(DB_PATH)) as con:
-        ret = con.execute(query).fetchall()
-        return ret
+        lst = con.execute(query).fetchall()
+        lst = [x[0] for x in lst]
+        return lst
 
 def insert_tr_menu(uid, tr_name):
     query = """

@@ -11,6 +11,7 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, FlexSendMessage, CarouselContainer,
 )
 from line_botr import carousel_creater as cc
+from line_botr.training import Training
 
 CHANNEL_ACCESS_TOKEN = os.getenv('CHANNEL_ACCESS_TOKEN')
 CHANNEL_SECRET = os.getenv('CHANNEL_SECRET')
@@ -49,15 +50,18 @@ def callback():
         if output_msg is None:
             throw_msg(reply_token, 'その操作はできません')
             return ""
-        elif output_msg == '登録':
-            data = cc.get_carousel_json()
-            throw_carousel(reply_token, data)
+        elif output_msg == '記録':
+            lst = repository.get_training_menu(user_id)
+            trainig_menu = [Training(t) for t in lst]
+            trainig_menu = cc.to_cc_json(trainig_menu)
+            throw_carousel(reply_token, trainig_menu)
             return ""
         elif output_msg == '参照':
-            data = repository.get_records(user_id)
-            output_msg = beautify_records(data)
-            throw_msg(reply_token, output_msg)
-            action_mode = None
+            lst = repository.get_records(user_id)
+            trainig_menu = [Training(t[0][0]) for t in lst]
+            trainig_menu = cc.to_cc_json(trainig_menu)
+            throw_carousel(reply_token, trainig_menu)
+            initialize_valiables()
             return ""
         elif output_msg == '追加':
             output_msg = '追加する種目名を入力してください'
@@ -68,11 +72,11 @@ def callback():
     if tr_name is None:
         if 'message' not in user_resource.keys():
             return ""
-        if action_mode == '登録':
-            input_msg = user_resource['message']['text']
+        input_msg = user_resource['message']['text']
+        if action_mode == '記録':            input_msg = user_resource['message']['text']
             output_msg = select_tr_name(reply_token, input_msg)
         elif action_mode == '追加':
-            repository.insert_tr_menu(user_id, tr_name)
+            repository.insert_tr_menu(user_id, input_msg)
             output_msg = '追加しました'
             initialize_valiables()
         throw_msg(reply_token, output_msg)
@@ -80,7 +84,6 @@ def callback():
 
     if tr_strength is None:
         input_msg = user_resource['message']['text']
-        output_msg = select_tr_strength(reply_token, input_msg)
         output_msg = select_tr_strength(user_id, input_msg)
         throw_msg(reply_token, output_msg)
         return ""
