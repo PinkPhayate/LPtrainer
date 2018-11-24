@@ -23,7 +23,7 @@
 				      "action": {
 								"type":"postback",
 						   "label":"Select this",
-						   "data":"data attribute",
+						   "data": "{{item['name']}}"
 				      }
 						}
 		    ]

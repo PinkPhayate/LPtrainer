@@ -53,12 +53,11 @@ def callback():
         elif output_msg == '記録':
             lst = repository.get_training_menu(user_id)
             trainig_menu = [Training(t) for t in lst]
-            trainig_menu = cc.items2tr_car(trainig_menu)
+            trainig_menu = cc.items2tra_car(trainig_menu)
             throw_carousel(reply_token, trainig_menu)
             return ""
         elif output_msg == '参照':
             lst = repository.get_records(user_id)
-            # trainig_menu = [Training(t) for t in lst]
             trainig_menu = cc.items2record_car(lst)
             throw_carousel(reply_token, trainig_menu)
             initialize_valiables()
@@ -67,6 +66,14 @@ def callback():
             output_msg = '追加する種目名を入力してください'
             throw_msg(reply_token, output_msg)
             return ""
+        elif output_msg == '削除':
+            output_msg = '削除する種目名を選択してください'
+            lst = repository.get_records(user_id)
+            [e.set_delete_button() for e in lst]
+            trainig_menu = cc.items2record_car(lst)
+            app.logger.info(trainig_menu)
+            throw_carousel(reply_token, trainig_menu)
+            return ""
 
 
     if tr_name is None:
@@ -74,13 +81,13 @@ def callback():
             input_attr = user_resource['postback']['data']
             repository.drop_record(input_attr)
             output_msg = '削除しました'
-        if 'message' not in user_resource.keys():
-            return ""
-        input_msg = user_resource['message']['text']
+            initialize_valiables()
         if action_mode == '記録':
+            input_attr = user_resource['postback']['data']
+            select_tr_name(reply_token, input_attr)
+            output_msg = '[回数] [セット数] [重さ(kg)]　の形式で入力してください'
+        if action_mode == '追加':
             input_msg = user_resource['message']['text']
-            output_msg = select_tr_name(reply_token, input_msg)
-        elif action_mode == '追加':
             repository.insert_tr_menu(user_id, input_msg)
             output_msg = '追加しました'
             initialize_valiables()
@@ -143,15 +150,12 @@ def select_action_mode(user_id, msg):
     if msg not in ACTION_LIST:
         return None
     action_mode = msg
-    print(msg + 'ですね')
     return msg
 
 def select_tr_name(user_id, msg):
     global action_mode
     global tr_name
     tr_name = msg
-    format_request_msg = '[回数] [セット数] [重さ(kg)]　の形式で入力してください'
-    return format_request_msg
 
 def select_tr_strength(user_id, msg):
     global action_mode
@@ -165,7 +169,7 @@ def select_tr_strength(user_id, msg):
     repository.insert_record(user_id, tr_name, msg)
 
     # record
-    reply_msg = "{0} {1} -登録完了".format(tr_name, tr_strength)
+    reply_msg = "{0} {1} \n登録完了".format(tr_name, tr_strength)
     initialize_valiables()
     return reply_msg
 

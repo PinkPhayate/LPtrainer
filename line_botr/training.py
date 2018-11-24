@@ -13,6 +13,8 @@ class Record():
     tr_weight = None
     tr_rep = None
     tr_set = None
+
+    has_delete_button = None
     def __init__(self, tr):
         self.get_training_record(tr)
 
@@ -24,4 +26,6 @@ class Record():
         self.tr_weight = tr[4]
         self.tr_rep = tr[5]
         self.tr_set = tr[6]
-        print(tr)
+
+    def set_delete_button(self):
+        self.has_delete_button = 1
