@@ -70,10 +70,9 @@ def callback():
 
     if tr_strength is None:
         input_msg = user_resource['message']['text']
-        output_msg = select_tr_strength(user_id, input_msg)
-        throw_msg(reply_token, output_msg)
-        return ""
-
+        output_msg = logic. select_3rd_action(user_id, tr_name, input_msg)
+        send_msg(reply_token, output_msg)
+        initialize_valiables()
     return ''
 
 def throw_msg(reply_token, msg):
@@ -113,6 +112,7 @@ def send_msg(reply_token, msg):
                 contents=CarouselContainer.new_from_json_dict(json.loads(msg))
             )
         )
+        return
     except json.decoder.JSONDecodeError:
         pass
     except Exception as e:
@@ -191,24 +191,3 @@ def log_global_variables():
     tn = tr_name if tr_name is not None else 'none'
     ts = tr_strength if tr_strength is not None else 'none'
     app.logger.info('{} {} {}'.format(am,  tn, ts))
-
-def is_invalid(msg):
-    ary = msg.split(' ')
-    if len(ary) < 2 or 3 < len(ary):
-        return True
-    not_digits = [x for x in ary if not x.isdigit()]
-    if 0 < len(not_digits):
-        return True
-    return False
-
-def beautify(msg):
-    ary = msg.split(' ')
-    if len(ary) == 2:
-        str = '{}rep {}set'.format(ary[0], ary[1])
-    if len(ary) == 3:
-        str = '{}rep {}set {}Kg'.format(ary[0], ary[1], ary[2])
-    return str
-
-def beautify_records(msg):
-    li = [' '.join(x) for x in msg]
-    return ' '.join(li)

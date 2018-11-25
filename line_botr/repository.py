@@ -52,7 +52,7 @@ def get_records(uid):
     # SELECT tr_date, tr_name, tr_weight, tr_rep, tr_set FROM training_record
     query = """
         SELECT * FROM training_record
-        WHERE tr_date = '{}' ORDER BY tr_date DESC;
+        WHERE tr_date = '{}' ORDER BY tr_date DESC LIMIT 10;
     """.format(datetime_string)
     print(query)
     with closing(sqlite3.connect(DB_PATH)) as con:
@@ -63,7 +63,7 @@ def get_records(uid):
 def get_training_menu(uid):
     query = """
         SELECT tr_name FROM training_kind
-        WHERE user_id = '{}'
+        WHERE user_id = '{}' LIMIT 10;
     """.format(uid)
     print(query)
     with closing(sqlite3.connect(DB_PATH)) as con:

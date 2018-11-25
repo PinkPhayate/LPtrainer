@@ -27,7 +27,7 @@ def select_1st_action(user_id, input_mode):
     elif input_mode == '参照':
         lst = repository.get_records(user_id)
         output_msg = cc.items2record_car(lst)
-        action_mode = None
+        input_mode = None
 
     elif input_mode == '追加':
         output_msg = '追加する種目名を入力してください'
@@ -59,3 +59,38 @@ def select_2nd_action(user_id, action_mode, resource):
         output_msg = '削除しました'
 
     return action_mode, output_msg
+
+
+def select_3rd_action(user_id, tr_name, input_msg):
+    """ 2回目の返信を決めるロジック
+    記録モードだけがこのメソッドにたどり着く
+    書き込みが行えたかどうかを返す
+    output_msg:str
+    """
+    if _is_invalid(input_msg):
+        return  "入力の形式が正しくありません"
+    try:
+        repository.insert_record(user_id, tr_name, input_msg)
+        tr_strength = _beautify(input_msg)
+        output_msg = "{0} {1} \n登録完了".format(tr_name, tr_strength)
+    except Exception as e:
+        print(e)
+        output_msg = 'DBへの書き込みに失敗しました'
+    return output_msg
+
+def _is_invalid(msg):
+    ary = msg.split(' ')
+    if len(ary) < 2 or 3 < len(ary):
+        return True
+    not_digits = [x for x in ary if not x.isdigit()]
+    if 0 < len(not_digits):
+        return True
+    return False
+
+def _beautify(msg):
+    ary = msg.split(' ')
+    if len(ary) == 2:
+        str = '{}rep {}set'.format(ary[0], ary[1])
+    if len(ary) == 3:
+        str = '{}rep {}set {}Kg'.format(ary[0], ary[1], ary[2])
+    return str
