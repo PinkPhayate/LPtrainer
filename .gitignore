@@ -102,3 +102,6 @@ ENV/
 
 # virtualenv
 /lp_env
+
+#DB
+sqlite.db

@@ -3,7 +3,7 @@ from line_botr import carousel_creater as cc
 from line_botr.training import Training
 ACTION_LIST = ['追加', '記録' , '削除', '参照']
 
-def is_invalid_action_mode(msg):
+def _is_invalid_action_mode(msg):
     if msg not in ACTION_LIST:
         return True
     return False
@@ -14,7 +14,7 @@ def select_1st_action(user_id, input_mode):
     決定したモード: str、返す文字列を返す: str
     """
     # action mode判定し、相応しくなければメッセージを返して終わり
-    if is_invalid_action_mode(input_mode):
+    if _is_invalid_action_mode(input_mode):
         return None, 'その操作はできません'
 
     # 相応しければaction modeを返す準備
