@@ -56,21 +56,16 @@ def callback():
 
 
     if tr_name is None:
-        if action_mode == '削除':
-            input_attr = user_resource['postback']['data']
-            repository.drop_record(input_attr)
-            output_msg = '削除しました'
+        try:
+            actm, output_msg = logic.select_2nd_action(user_id, action_mode, user_resource)
+        except Exception as e:
+            print(e)
+            actm, output_msg = None, '正しく処理ができませんでした'
+        send_msg(reply_token, output_msg)
+        if actm is None:
             initialize_valiables()
-        if action_mode == '記録':
-            input_attr = user_resource['postback']['data']
-            select_tr_name(reply_token, input_attr)
-            output_msg = '[回数] [セット数] [重さ(kg)]　の形式で入力してください'
-        if action_mode == '追加':
-            input_msg = user_resource['message']['text']
-            repository.insert_tr_menu(user_id, input_msg)
-            output_msg = '追加しました'
-            initialize_valiables()
-        throw_msg(reply_token, output_msg)
+        else:
+            tr_name = actm
         return ""
 
     if tr_strength is None:

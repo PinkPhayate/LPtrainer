@@ -37,3 +37,25 @@ def select_1st_action(user_id, input_mode):
         [e.set_delete_button() for e in lst]
         output_msg = cc.items2record_car(lst)
     return input_mode, output_msg
+
+
+def select_2nd_action(user_id, action_mode, resource):
+    """ 2回目の返信を決めるロジック
+    line botiに返してもらう文字列を決定する。形式は問わない。
+    決定したモード: str、返す文字列を返す: str
+    この段階でやりとりが終了するものがほとんど -> action_modeに値がなければ
+    グローバル変数を初期化させる
+    """
+    if action_mode == '記録':
+        action_mode = resource['postback']['data']
+        output_msg = '[回数] [セット数] [重さ(kg)]　の形式で入力してください'
+    elif action_mode == '追加':
+        repository.insert_tr_menu(user_id, resource['message']['text'])
+        action_mode = None
+        output_msg = '追加しました'
+    elif action_mode == '削除':
+        repository.drop_record(resource['postback']['data'])
+        action_mode = None
+        output_msg = '削除しました'
+
+    return action_mode, output_msg
