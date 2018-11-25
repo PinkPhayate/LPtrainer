@@ -10,8 +10,8 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, FlexSendMessage, CarouselContainer,
 )
-from line_botr import carousel_creater as cc
-from line_botr.training import Training
+from line_botr import carousel_creater as cc, logic
+
 
 CHANNEL_ACCESS_TOKEN = os.getenv('CHANNEL_ACCESS_TOKEN')
 CHANNEL_SECRET = os.getenv('CHANNEL_SECRET')
@@ -46,34 +46,13 @@ def callback():
     reply_token =  user_resource['replyToken']
     if action_mode is None:
         input_msg = user_resource['message']['text']
-        output_msg = select_action_mode(reply_token, input_msg)
-        if output_msg is None:
-            throw_msg(reply_token, 'その操作はできません')
-            return ""
-        elif output_msg == '記録':
-            lst = repository.get_training_menu(user_id)
-            trainig_menu = [Training(t) for t in lst]
-            trainig_menu = cc.items2tra_car(trainig_menu)
-            throw_carousel(reply_token, trainig_menu)
-            return ""
-        elif output_msg == '参照':
-            lst = repository.get_records(user_id)
-            trainig_menu = cc.items2record_car(lst)
-            throw_carousel(reply_token, trainig_menu)
+        actm, output_msg = logic.select_1st_action(user_id, input_msg)
+        send_msg(reply_token, output_msg)
+        if actm is None:
             initialize_valiables()
-            return ""
-        elif output_msg == '追加':
-            output_msg = '追加する種目名を入力してください'
-            throw_msg(reply_token, output_msg)
-            return ""
-        elif output_msg == '削除':
-            output_msg = '削除する種目名を選択してください'
-            lst = repository.get_records(user_id)
-            [e.set_delete_button() for e in lst]
-            trainig_menu = cc.items2record_car(lst)
-            app.logger.info(trainig_menu)
-            throw_carousel(reply_token, trainig_menu)
-            return ""
+        else:
+            action_mode = actm
+        return ""
 
 
     if tr_name is None:
@@ -129,6 +108,32 @@ def throw_carousel(reply_token, data):
         )
     except:
         pass
+
+def send_msg(reply_token, msg):
+    try:
+        line_bot_api.reply_message(
+            reply_token,
+            FlexSendMessage(
+                alt_text="trainings",
+                contents=CarouselContainer.new_from_json_dict(json.loads(msg))
+            )
+        )
+    except json.decoder.JSONDecodeError:
+        pass
+    except Exception as e:
+        app.logger.error(e)
+        initialize_valiables()
+        return
+    try:
+        line_bot_api.reply_message(
+            reply_token,
+            TextSendMessage(text=msg))
+    except Exception as e:
+        app.logger.error(e)
+        initialize_valiables()
+        return
+
+
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
