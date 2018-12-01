@@ -1,4 +1,3 @@
-import sqlite3
 from sqlalchemy import desc
 from contextlib import closing
 from datetime import datetime as dt
