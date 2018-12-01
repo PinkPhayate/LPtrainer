@@ -1,4 +1,5 @@
 import sqlite3
+from sqlalchemy import desc
 from contextlib import closing
 from datetime import datetime as dt
 from line_botr.training import Record
@@ -16,6 +17,17 @@ def create_table():
         tr_rep INTEGER NOT NULL,
         tr_set INTEGER NOT NULL
 		);
+
+        # Postgres
+        CREATE TABLE training_record(
+    	id    SERIAL primary key,
+        user_id   TEXT       NOT NULL,
+        tr_date   TEXT       NOT NULL,
+        tr_name   TEXT        NOT NULL,
+        tr_weight INTEGER,
+        tr_rep INTEGER NOT NULL,
+        tr_set INTEGER NOT NULL);
+
     """
 
     kind_query = """
@@ -24,6 +36,12 @@ def create_table():
         user_id INTEGER NOT NULL ,
         tr_name TEXT NOT NULL
     );
+
+    # Postgres
+    CREATE TABLE training_kind(
+	id    SERIAL primary key,
+    user_id   TEXT       NOT NULL,
+    tr_name TEXT NOT NULL);
     """
 
     with closing(sqlite3.connect(DB_PATH)) as con:

@@ -2,8 +2,8 @@ from flaskr import db
 
 class Training(db.Model):
     __tablename__ = "training_kind"
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    user_id = db.Column(db.String(120))
     tr_name = db.Column(db.String(120))
 
     def __init__(self, uid, tr_name):
@@ -13,7 +13,7 @@ class Training(db.Model):
 class Record(db.Model):
     __tablename__ = "training_record"
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer)
+    user_id = db.Column(db.String(120))
     tr_date = db.Column  (db.String(120))
     tr_name = db.Column  (db.String(120))
     tr_weight = db.Column(db.Integer)
