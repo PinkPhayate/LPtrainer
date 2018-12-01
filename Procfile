@@ -1,1 +1,1 @@
-web: python manage.py --noauth_local_webserver
+web: gunicorn app:app --log-file -

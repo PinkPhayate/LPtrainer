@@ -19,9 +19,6 @@ CHANNEL_SECRET = os.getenv('CHANNEL_SECRET')
 line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(CHANNEL_SECRET)
 
-@app.route("/")
-def hello_world():
-    return "hello world!"
 
 @app.route("/callback", methods=['POST'])
 def callback():
