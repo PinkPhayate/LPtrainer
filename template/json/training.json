@@ -10,7 +10,7 @@
 				"contents": [
 					{
 						"type": "text",
-						"text": "{{item['name']}}"
+						"text": "{{item['tr_name']}}"
 					}
 				]
 			},
@@ -23,7 +23,7 @@
 				      "action": {
 								"type":"postback",
 						   "label":"Select this",
-						   "data": "{{item['name']}}"
+						   "data": "{{item['tr_name']}}"
 				      }
 						}
 		    ]

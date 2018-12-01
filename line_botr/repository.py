@@ -2,6 +2,8 @@ import sqlite3
 from contextlib import closing
 from datetime import datetime as dt
 from line_botr.training import Record
+from line_botr.training import Training
+from flaskr  import db
 DB_PATH = 'sqlite.db'
 def create_table():
     record_query = """
@@ -61,25 +63,12 @@ def get_records(uid):
         return ret
 
 def get_training_menu(uid):
-    query = """
-        SELECT tr_name FROM training_kind
-        WHERE user_id = '{}' LIMIT 10;
-    """.format(uid)
-    print(query)
-    with closing(sqlite3.connect(DB_PATH)) as con:
-        lst = con.execute(query).fetchall()
-        lst = [x[0] for x in lst]
-        return lst
+    return db.session.query(Training).all()
 
 def insert_tr_menu(uid, tr_name):
-    query = """
-        INSERT INTO training_kind (user_id, tr_name)
-                VALUES ('{}', '{}');
-    """.format(uid, tr_name)
-    print(query)
-    with closing(sqlite3.connect(DB_PATH)) as con:
-        con.execute(query)
-        con.commit()
+    training = Training(uid, tr_name)
+    db.session.add(training)
+    db.session.commit()
 
 def drop_record(input_attr):
     query = """

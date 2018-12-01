@@ -1,9 +1,14 @@
-class Training(object):
-    name = ''
-    vd_url = ''
-    def __init__(self, name, vd_url=None):
-        self.name = name
-        self.vd_url = vd_url
+from flaskr import db
+
+class Training(db.Model):
+    __tablename__ = "training_kind"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    tr_name = db.Column(db.String(120))
+
+    def __init__(self, uid, tr_name):
+        self.user_id = uid
+        self.tr_name = tr_name
 
 class Record():
     id = None

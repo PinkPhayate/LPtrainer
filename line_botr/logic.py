@@ -21,8 +21,7 @@ def select_1st_action(user_id, input_mode):
     # モード別の処理を書く
     if input_mode == '記録':
         lst = repository.get_training_menu(user_id)
-        trainig_menu = [Training(t) for t in lst]
-        output_msg = cc.items2tra_car(trainig_menu)
+        output_msg = cc.items2tra_car(lst)
 
     elif input_mode == '参照':
         lst = repository.get_records(user_id)
