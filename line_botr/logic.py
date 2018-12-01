@@ -1,6 +1,5 @@
 from line_botr import repository
 from line_botr import carousel_creater as cc
-from line_botr.training import Training
 ACTION_LIST = ['追加', '記録' , '削除', '参照']
 
 def _is_invalid_action_mode(msg):
@@ -21,11 +20,13 @@ def select_1st_action(user_id, input_mode):
     # モード別の処理を書く
     if input_mode == '記録':
         lst = repository.get_training_menu(user_id)
-        output_msg = cc.items2tra_car(lst)
+        output_msg = cc.items2tra_car(lst) if len(lst) > 0\
+                            else "まだ登録されていません"
 
     elif input_mode == '参照':
         lst = repository.get_records(user_id)
-        output_msg = cc.items2record_car(lst)
+        output_msg = cc.items2record_car(lst) if len(lst) > 0\
+                            else "まだ記録がありません"
         input_mode = None
 
     elif input_mode == '追加':

@@ -37,33 +37,24 @@ def insert_record(uid, tr_name, tr_strength):
     tr_set = ary[1]
     tr_weight = ary[2] if 2 < len(ary) else 0
     datetime_string = dt.now().strftime("%Y-%m-%d")
-
-    query = """
-        INSERT INTO training_record (
-            user_id, tr_date, tr_name, tr_weight, tr_rep, tr_set)
-                VALUES ('{}', '{}', '{}', {}, {}, {});
-
-    """.format(uid, datetime_string, tr_name, tr_weight, tr_rep, tr_set)
-    print(query)
-    with closing(sqlite3.connect(DB_PATH)) as con:
-        con.execute(query)
-        con.commit()
+    rec = Record(uid, datetime_string, tr_name, tr_weight, tr_rep, tr_set)
+    db.session.add(rec)
+    db.session.commit()
 
 def get_records(uid):
     datetime_string = dt.now().strftime("%Y-%m-%d")
-    # SELECT tr_date, tr_name, tr_weight, tr_rep, tr_set FROM training_record
-    query = """
-        SELECT * FROM training_record
-        WHERE tr_date = '{}' ORDER BY tr_date DESC LIMIT 10;
-    """.format(datetime_string)
-    print(query)
-    with closing(sqlite3.connect(DB_PATH)) as con:
-        ret = con.execute(query).fetchall()
-        ret = [Record(d) for d in ret]
-        return ret
+    print(datetime_string)
+    return db.session.query(Record).\
+            filter(Record.tr_date==datetime_string).\
+            limit(10).\
+            all()
+
 
 def get_training_menu(uid):
-    return db.session.query(Training).all()
+    return db.session.query(Training).\
+            order_by(desc( Training.id)).\
+            limit(10).\
+            all()
 
 def insert_tr_menu(uid, tr_name):
     training = Training(uid, tr_name)
@@ -71,11 +62,7 @@ def insert_tr_menu(uid, tr_name):
     db.session.commit()
 
 def drop_record(input_attr):
-    query = """
-        DELETE FROM training_record
-                WHERE id = {};
-    """.format(input_attr)
-    print(query)
-    with closing(sqlite3.connect(DB_PATH)) as con:
-        con.execute(query)
-        con.commit()
+    db.session.query(Record).\
+        filter(Record.id==input_attr).\
+        delete()
+    db.session.commit()
