@@ -31,7 +31,7 @@
 		                "text": "WEIGHT",
 		                "color": "#aaaaaa",
 		                "size": "sm",
-		                "flex": 1
+		                "flex": 3
 		              },
 		              {
 		                "type": "text",
@@ -54,7 +54,7 @@
 		                "text": "REP",
 		                "color": "#aaaaaa",
 		                "size": "sm",
-		                "flex": 1
+		                "flex": 3
 		              },
 		              {
 		                "type": "text",
@@ -76,7 +76,7 @@
 		                "text": "SET",
 		                "color": "#aaaaaa",
 		                "size": "sm",
-		                "flex": 1
+		                "flex": 3
 		              },
 		              {
 		                "type": "text",
