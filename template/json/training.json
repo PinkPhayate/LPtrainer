@@ -22,7 +22,7 @@
 				      "type": "button",
 				      "action": {
 								"type":"postback",
-						   "label":"Select this",
+						   "label":"Do it",
 						   "data": "{{item['tr_name']}}"
 				      }
 						}
