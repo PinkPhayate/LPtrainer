@@ -1,10 +1,13 @@
+from flaskr import db
 from datetime import datetime
-class StatusSession(object):
-    user_id = None
-    action_mode = None
-    tr_name = None
-    tr_strength = None
-    last_datetime = None
+class StatusSession(db.Model):
+    __tablename__ = "session_table"
+    user_id = db.Column(db.String(120), primary_key=True, nullable=False)
+    action_mode = db.Column(db.String(120))
+    tr_name = db.Column(db.String(120))
+    tr_strength = db.Column(db.String(120))
+    last_datetime = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
+
 
     def __init__(self, user_id):
         self._set_cuttrnt_date()
@@ -41,3 +44,5 @@ class StatusSession(object):
         print("tr_name: "+ _tn)
         _ts = self.tr_strength if self.tr_strength is not None else ' '
         print("tr_strength: "+ _ts)
+        _ts = self.last_datetime if self.last_datetime is not None else ' '
+        print("last_datetime: "+ str(_ts))

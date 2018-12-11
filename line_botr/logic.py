@@ -1,4 +1,5 @@
 from line_botr import repository
+from line_botr.session import StatusSession
 from line_botr import carousel_creater as cc
 ACTION_LIST = ['追加', '記録' , '削除', '参照']
 
@@ -52,10 +53,12 @@ def select_2nd_action(user_id, action_mode, resource):
     elif action_mode == '追加':
         repository.insert_tr_menu(user_id, resource['message']['text'])
         action_mode = None
+        repository.drop_session_record(user_id)
         output_msg = '追加しました'
     elif action_mode == '削除':
         repository.drop_record(resource['postback']['data'])
         action_mode = None
+        repository.drop_session_record(user_id)
         output_msg = '削除しました'
 
     return action_mode, output_msg
@@ -76,7 +79,18 @@ def select_3rd_action(user_id, tr_name, input_msg):
     except Exception as e:
         print(e)
         output_msg = 'DBへの書き込みに失敗しました'
+    repository.drop_session_record(user_id)
     return output_msg
+
+def get_session(user_id):
+    previous_sess = repository.get_session_record(user_id)
+    sess = previous_sess[0] if len(previous_sess) > 0 else StatusSession(user_id)
+    sess = StatusSession(user_id) if sess.is_invalid_session() else sess
+    return sess
+
+def set_session(sess):
+    sess.print_session_vars()
+    repository.insert_session_record(sess)
 
 def _is_invalid(msg):
     ary = msg.split(' ')

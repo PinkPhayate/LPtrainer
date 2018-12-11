@@ -3,6 +3,7 @@ from contextlib import closing
 from datetime import datetime as dt
 from line_botr.training import Record
 from line_botr.training import Training
+from line_botr.session import StatusSession
 from flaskr  import db
 DB_PATH = 'sqlite.db'
 def create_table():
@@ -26,6 +27,14 @@ def create_table():
         tr_weight INTEGER,
         tr_rep INTEGER NOT NULL,
         tr_set INTEGER NOT NULL);
+
+        # Postgres
+        CREATE TABLE session_table(
+        user_id       TEXT       primary key,
+        action_mode   TEXT,
+        tr_name       TEXT,
+        tr_strength   TEXT,
+        last_datetime   TIMESTAMP NOT NULL);
 
     """
 
@@ -81,5 +90,22 @@ def insert_tr_menu(uid, tr_name):
 def drop_record(input_attr):
     db.session.query(Record).\
         filter(Record.id==input_attr).\
+        delete()
+    db.session.commit()
+
+def get_session_record(user_id):
+    return db.session.query(StatusSession).\
+            filter(StatusSession.user_id==user_id).\
+            limit(1).\
+            all()
+
+def insert_session_record(sess):
+    # drop_session_record(sess.user_id)
+    db.session.add(sess)
+    db.session.commit()
+
+def drop_session_record(user_id):
+    db.session.query(StatusSession).\
+        filter(StatusSession.user_id==user_id).\
         delete()
     db.session.commit()
