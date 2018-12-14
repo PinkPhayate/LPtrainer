@@ -57,8 +57,7 @@ def create_table():
         con.execute(record_query)
         con.commit()
 
-def insert_record(uid, tr_name, tr_strength):
-    ary = tr_strength.split(' ')
+def insert_record(uid, tr_name, ary):
     tr_rep = ary[0]
     tr_set = ary[1]
     tr_weight = ary[2] if 2 < len(ary) else 0

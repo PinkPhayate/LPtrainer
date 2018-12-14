@@ -2,6 +2,7 @@ from line_botr import repository
 from line_botr.session import StatusSession
 from line_botr import carousel_creater as cc
 ACTION_LIST = ['追加', '記録' , '削除', '参照']
+USEAGE_TEXT = "template/text/usage.txt"
 
 def _is_invalid_action_mode(msg):
     if msg not in ACTION_LIST:
@@ -15,7 +16,7 @@ def select_1st_action(user_id, input_mode):
     """
     # action mode判定し、相応しくなければメッセージを返して終わり
     if _is_invalid_action_mode(input_mode):
-        return None, 'その操作はできません'
+        return None, _show_menu()
 
     # 相応しければaction modeを返す準備
     # モード別の処理を書く
@@ -70,11 +71,12 @@ def select_3rd_action(user_id, tr_name, input_msg):
     書き込みが行えたかどうかを返す
     output_msg:str
     """
-    if _is_invalid(input_msg):
+    ary = split(input_msg)
+    if _is_invalid(ary):
         return  "入力の形式が正しくありません"
     try:
-        repository.insert_record(user_id, tr_name, input_msg)
-        tr_strength = _beautify(input_msg)
+        repository.insert_record(user_id, tr_name, ary)
+        tr_strength = _beautify(ary)
         output_msg = "{0} {1} \n登録完了".format(tr_name, tr_strength)
     except Exception as e:
         print(e)
@@ -96,8 +98,11 @@ def set_session(sess):
     sess.print_session_vars()
     repository.insert_session_record(sess)
 
-def _is_invalid(msg):
-    ary = msg.split(' ')
+def split(msg):
+    ary = msg.split(' ') if ' ' in msg else msg.split('-')
+    return ary
+
+def _is_invalid(ary):
     if len(ary) < 2 or 3 < len(ary):
         return True
     not_digits = [x for x in ary if not x.isdigit()]
@@ -105,8 +110,7 @@ def _is_invalid(msg):
         return True
     return False
 
-def _beautify(msg):
-    ary = msg.split(' ')
+def _beautify(ary):
     if len(ary) == 2:
         str = '{}rep {}set'.format(ary[0], ary[1])
     if len(ary) == 3:
@@ -118,3 +122,8 @@ def is_initialize(user_id, input_msg):
         repository.drop_session_record(user_id)
         return True
     return False
+
+def _show_menu():
+    with open(USEAGE_TEXT) as f:
+        s = f.read()
+    return s
