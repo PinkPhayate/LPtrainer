@@ -6,7 +6,7 @@
 			"type": "bubble",
 			"header": {
 				"type": "box",
-				"layout": "vertical",
+				"layout": "horizontal",
 				"contents": [
 					{
 						"type": "text",
