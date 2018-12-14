@@ -32,6 +32,12 @@ def callback():
     sess.print_session_vars()
     # print_variables(sess)
 
+    input_msg = _get_message_text(user_resource)
+    if logic.is_initialize(sess.user_id, input_msg):
+        actm, output_msg = None, '初期化しました'
+        send_msg(sess.user_id, reply_token, output_msg)
+        return ""
+
 
     if sess.action_mode is None:
         input_msg = _get_message_text(user_resource)

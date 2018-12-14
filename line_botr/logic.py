@@ -112,3 +112,9 @@ def _beautify(msg):
     if len(ary) == 3:
         str = '{}rep {}set {}Kg'.format(ary[0], ary[1], ary[2])
     return str
+
+def is_initialize(user_id, input_msg):
+    if input_msg is not None and input_msg == "初期化":
+        repository.drop_session_record(user_id)
+        return True
+    return False
