@@ -84,8 +84,12 @@ def select_3rd_action(user_id, tr_name, input_msg):
 
 def get_session(user_id):
     previous_sess = repository.get_session_record(user_id)
-    sess = previous_sess[0] if len(previous_sess) > 0 else StatusSession(user_id)
-    sess = StatusSession(user_id) if sess.is_invalid_session() else sess
+    if len(previous_sess) < 1:
+        return StatusSession(user_id)
+    sess = previous_sess[0]
+    if sess.is_invalid_session():
+        repository.drop_session_record(user_id)
+        sess = StatusSession(user_id)
     return sess
 
 def set_session(sess):

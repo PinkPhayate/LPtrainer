@@ -32,7 +32,10 @@ class StatusSession(db.Model):
         if self.last_datetime is None:
             return False
         dt_now = datetime.now()
-        if (dt_now - self.last_datetime).seconds > 60 * 10:
+        diff_time = dt_now - self.last_datetime
+        if diff_time.days > 0:
+            return True
+        if diff_time.seconds > 60 * 10:
             return True
         return False
 
